@@ -8,3 +8,9 @@
 # Build
 build
 cpass
+
+# Database
+db.sqlite
+
+# Keys
+*.key
