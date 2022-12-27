@@ -1,8 +1,11 @@
 TARGET = cpass
 CC = gcc
 
-CFLAGS = -Wall -Wextra -std=c99 -O3 -I includes
-CFLAGS += -MMD -MP -iquote $(INC_DIR)
+CFLAGS = -Wall -Wextra -std=c99 -O3 -DSQLITE_HAS_CODEC
+CFLAGS += -iquote $(INC_DIR) -I lib/sqlcipher -lsqlcipher
+CFLAGS += -MMD -MP
+
+DFLAGS = -DSQLITE_HAS_CODEC
 
 LDFLAGS = -L lib -lssl -lcrypto -lsqlite3 -lncurses
 
@@ -13,8 +16,8 @@ INC_DIR = includes
 OBJ_DIR = $(BUILD_DIR)
 DEP_DIR = $(BUILD_DIR)
 
-vpath %.c $(SRC_DIR)
-vpath %.h $(INC_DIR)
+vpath %.c $(SRC_DIR) $(SRC_DIR)/db
+vpath %.h $(INC_DIR) $(INC_DIR)/cpass
 
 vpath %.o $(OBJ_DIR)
 vpath %.d $(DEP_DIR)
@@ -48,7 +51,7 @@ all: $(TARGET)
 	$(ECHO_KO) "Unknown directive $@" && $(DIE)
 
 $(TARGET): $(OBJ)
-	$(ECHO_OK) "Linking $(CYAN)$<$(RESET)$(BOLD)...$(RESET)"
+	$(ECHO_OK) "Linking $(CYAN)$(notdir $?)$(RESET)$(BOLD)...$(RESET)"
 	@ $(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 	$(ECHO_OK) "Linked $(BLUE)$(shell echo "$?" | wc -w)$(RESET) file(s)"
 
@@ -56,12 +59,12 @@ $(TARGET): $(OBJ)
 
 $(BUILD_DIR)/%.o: %.c
 	@ mkdir -p $(@D)
-	@ $(CC) $(CFLAGS) $(DFLAGS) -c $< -o $@ || $(DIE)
+	@ $(CC) $(CFLAGS) -c $< -o $@ || $(DIE)
 	$(ECHO_OK) "Compiled $(CYAN)$<$(RESET)"
 
 $(BUILD_DIR)/%.d: %.c
 	@ mkdir -p $(@D)
-	@ $(CC) $(CFLAGS) $(DFLAGS) -MM -MT $(@:.d=.o) $< -MF $@
+	@ $(CC) $(CFLAGS) -MM -MT $(@:.d=.o) $< -MF $@
 
 clean:
 	@ $(RM) -r "$(BUILD_DIR)"
