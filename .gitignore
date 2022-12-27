@@ -1,0 +1,10 @@
+# IDE Configuration
+.idea
+
+# Compiled files
+*.o
+*.d
+
+# Build
+build
+cpass
