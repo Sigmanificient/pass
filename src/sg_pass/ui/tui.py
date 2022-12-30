@@ -1,8 +1,11 @@
-from typing import Final
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
 import unicurses
 
-from sg_pass.ui import Screen
+if TYPE_CHECKING:
+    from sg_pass.ui import Screen
+    from typing import Final
 
 
 KEY_ESCAPE: Final[int] = 27
@@ -25,3 +28,9 @@ class TUI:
 
         if key in (KEY_ESCAPE, KEY_Q):
             self.is_running = False
+            return
+
+        if key == unicurses.KEY_RESIZE:
+            unicurses.resize_term(0, 0)
+            self.screen.update_size()
+            return
