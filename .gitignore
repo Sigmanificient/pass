@@ -1,16 +1,5 @@
 # IDE Configuration
 .idea
 
-# Compiled files
-*.o
-*.d
-
 # Build
-build
-cpass
-
-# Database
-db.sqlite
-
-# Keys
-*.key
+venv
